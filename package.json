@@ -1,0 +1,24 @@
+{
+  "name": "docker-base-cli",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.12.0",
+    "eslint-config-alloy": "^3.8.2",
+    "prettier": "^2.1.2"
+  },
+  "dependencies": {
+    "semver": "^7.3.2"
+  },
+  "bin": {
+    "hodor": "./bin/index.js"
+  }
+}
