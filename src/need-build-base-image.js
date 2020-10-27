@@ -11,7 +11,7 @@ const isNeedBuildBaseImage = () => {
   // TODO: 相等且install package is same || 版本号兼容问题
   if (
     Object.keys(contextDependencies).length !== Object.keys(dependencies).length ||
-    Object.keys(contextDecontextDevDependenciespendencies).length !== Object.keys(devDependencies).length
+    Object.keys(contextDevDependencies).length !== Object.keys(devDependencies).length
   ) {
     cacheData.devDependencies = contextDevDependencies
     cacheData.dependencies = contextDependencies

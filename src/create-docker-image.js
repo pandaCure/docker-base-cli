@@ -20,7 +20,11 @@ console.log('baseDockerFilePath', baseDockerFilePath)
 console.log('dockerFilePath', dockerFilePath)
 const PROJECT = 'onionweb-base'
 const REMOTE = 'docker.yc345.tv/teacherschool/'
-
+;[('SIGINT', 'SIGTERM')].forEach(function (sig) {
+  process.on(sig, function () {
+    process.exit()
+  })
+})
 const createDockerBaseImage = async () => {
   const { cachePackagePath } = require('./need-path')
   const { dockerVersion } = require(cachePackagePath)
@@ -50,34 +54,40 @@ const createDockerBaseImage = async () => {
       canUseDocker = true
     }
   }
-  b1.increment()
-  console.log('laile')
-  const buildDockerProgress = await execa('docker', ['build', '-t', BUILD_IMAGE, '.', '-f', baseDockerFileName])
-  console.log(buildDockerProgress)
-  b1.increment()
-  const tagDockerImage = await execa('docker', ['tag', BUILD_IMAGE, SOURCE_IMAGE])
-  console.log(tagDockerImage)
-  b1.increment()
-  const pushDockerImage = await execa('docker', ['push', SOURCE_IMAGE])
-  console.log(pushDockerImage)
-  b1.increment()
-  const clearCurrentDockerImageId = await execa('docker', ['images', `${BUILD_IMAGE}`, '-q'])
-  console.log(clearCurrentDockerImageId.stdout)
-  b1.increment()
-  const clearCurrentDockerImage = await execa('docker', [
-    'rmi',
-    '-f',
-    `${clearCurrentDockerImageId.stdout.slice(0, 12)}`,
-  ])
-  console.log(clearCurrentDockerImage)
-  b1.stop()
-  console.log(`build successfully`)
-  const config = fs.readFileSync(dockerFilePath, 'utf-8')
-  const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/.*:)([a-zA-Z0-9]*)/g, (a, b, c) => {
-    return `${b}${version}`
-  })
-  console.log(replaceStr)
-  fs.writeFileSync(dockerFilePath, replaceStr)
-  await execa('git', ['add', dockerFilePath])
+  try {
+    console.log('asdhhshajkl')
+    b1.increment()
+    console.log('laile')
+    const buildDockerProgress = await execa('docker', ['build', '-t', BUILD_IMAGE, '.', '-f', baseDockerFileName])
+    console.log(buildDockerProgress)
+    b1.increment()
+    const tagDockerImage = await execa('docker', ['tag', BUILD_IMAGE, SOURCE_IMAGE])
+    console.log(tagDockerImage)
+    b1.increment()
+    const pushDockerImage = await execa('docker', ['push', SOURCE_IMAGE])
+    console.log(pushDockerImage)
+    b1.increment()
+    const clearCurrentDockerImageId = await execa('docker', ['images', `${BUILD_IMAGE}`, '-q'])
+    console.log(clearCurrentDockerImageId.stdout)
+    b1.increment()
+    const clearCurrentDockerImage = await execa('docker', [
+      'rmi',
+      '-f',
+      `${clearCurrentDockerImageId.stdout.slice(0, 12)}`,
+    ])
+    console.log(clearCurrentDockerImage)
+    b1.stop()
+    console.log(`build successfully`)
+    const config = fs.readFileSync(dockerFilePath, 'utf-8')
+    const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/(.*):)([a-zA-Z0-9]*)/g, (a, b, c, d) => {
+      return `${b}${PROJECT}:${version}`
+    })
+    console.log(replaceStr)
+    fs.writeFileSync(dockerFilePath, replaceStr)
+    await execa('git', ['add', dockerFilePath])
+  } catch (error) {
+    console.error(error)
+    process.exit(1)
+  }
 }
 module.exports = createDockerBaseImage
