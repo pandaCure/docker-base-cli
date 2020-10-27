@@ -4,11 +4,20 @@ const execa = require('execa')
 const cliProgress = require('cli-progress')
 const createDockerImageVersion = require('./create-version')
 const stdout = require('./stdout')
+const colors = require('colors')
+const b1 = new cliProgress.SingleBar({
+  format: 'CLI Progress |' + colors.cyan('{bar}') + '| {percentage}% || {value}/{total} Chunks || Speed: {speed}',
+  barCompleteChar: '\u2588',
+  barIncompleteChar: '\u2591',
+  hideCursor: true,
+})
 const contextPath = process.cwd()
 const baseDockerFileName = 'Dockerfile.base'
+const dockerFileName = 'Dockerfile'
 const baseDockerFilePath = path.join(contextPath, baseDockerFileName)
+const dockerFilePath = path.join(contextPath, dockerFileName)
 console.log('baseDockerFilePath', baseDockerFilePath)
-
+console.log('dockerFilePath', dockerFilePath)
 const PROJECT = 'onionweb-base'
 const REMOTE = 'docker.yc345.tv/teacherschool/'
 
@@ -28,36 +37,47 @@ const createDockerBaseImage = async () => {
   } catch (error) {
     await execa('open', ['/Applications/Docker.app'])
   }
+  b1.start(1000, 0, {
+    speed: 'N/A',
+  })
   let canUseDocker = true
   while (canUseDocker) {
     try {
       canUseDocker = false
+      b1.update(1)
       await execa('docker', ['ps', '-q'])
     } catch (error) {
       canUseDocker = true
     }
   }
+  b1.increment()
   console.log('laile')
-  const buildDockerProgress = await execa('docker', [
-    'build',
-    '-t',
-    BUILD_IMAGE,
-    '.',
-    '-f',
-    baseDockerFileName,
-  ]).stdout.pipe(stdout)
+  const buildDockerProgress = await execa('docker', ['build', '-t', BUILD_IMAGE, '.', '-f', baseDockerFileName])
   console.log(buildDockerProgress)
-  const tagDockerImage = await execa('docker', ['tag', BUILD_IMAGE, SOURCE_IMAGE]).stdout.pipe(stdout)
+  b1.increment()
+  const tagDockerImage = await execa('docker', ['tag', BUILD_IMAGE, SOURCE_IMAGE])
   console.log(tagDockerImage)
-  const pushDockerImage = await execa('docker', ['push', SOURCE_IMAGE]).stdout.pipe(stdout)
+  b1.increment()
+  const pushDockerImage = await execa('docker', ['push', SOURCE_IMAGE])
   console.log(pushDockerImage)
+  b1.increment()
   const clearCurrentDockerImageId = await execa('docker', ['images', `${BUILD_IMAGE}`, '-q'])
+  console.log(clearCurrentDockerImageId.stdout)
+  b1.increment()
   const clearCurrentDockerImage = await execa('docker', [
     'rmi',
     '-f',
-    `$(docker images ${BUILD_IMAGE} -q)`,
-  ]).stdout.pipe(stdout)
+    `${clearCurrentDockerImageId.stdout.slice(0, 12)}`,
+  ])
   console.log(clearCurrentDockerImage)
-  // console.log(`build successfully`)
+  b1.stop()
+  console.log(`build successfully`)
+  const config = fs.readFileSync(dockerFilePath, 'utf-8')
+  const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/.*:)([a-zA-Z0-9]*)/g, (a, b, c) => {
+    return `${b}${version}`
+  })
+  console.log(replaceStr)
+  fs.writeFileSync(dockerFilePath, replaceStr)
+  await execa('git', ['add', dockerFilePath])
 }
 module.exports = createDockerBaseImage

@@ -1,4 +1,4 @@
-const { Writable } = require('stream')
+const { Transform } = require('stream')
 const cliProgress = require('cli-progress')
 const colors = require('colors')
 const b1 = new cliProgress.SingleBar({
@@ -9,8 +9,10 @@ const b1 = new cliProgress.SingleBar({
 })
 let total = 0
 let count = 0
-const stdout = new Writable({
-  write(chunk, encoding, callback) {
+const stdout = new Transform({
+  readableObjectMode: true,
+  writableObjectMode: true,
+  transform(chunk, encoding, callback) {
     console.log(`------------------->`, 'write')
     console.log(chunk.toString())
     const str = chunk.toString()
@@ -18,7 +20,7 @@ const stdout = new Writable({
     if (Array.isArray(numArr)) {
       if (total === count) {
         total = total + numArr[2]
-        b1.start(total, 0, {
+        b1.start(total, count, {
           speed: 'N/A',
         })
         count++
