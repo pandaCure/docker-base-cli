@@ -16,6 +16,9 @@
     "prettier": "^2.1.2"
   },
   "dependencies": {
+    "cli-progress": "^3.8.2",
+    "colors": "^1.4.0",
+    "execa": "^4.0.3",
     "semver": "^7.3.2"
   },
   "bin": {

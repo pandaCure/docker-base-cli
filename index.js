@@ -4,9 +4,7 @@ const path = require('path')
 const package = require('./package.json')
 const createCacheFile = require('./src/create-cache-file')
 const isNeedBuildBaseImage = require('./src/need-build-base-image')
-const homePath = process.env.HOME || process.env.USERPROFILE
-const cachePackageFile = 'cachePackage.json'
-const cachePackagePath = path.resolve(homePath, cachePackageFile)
+const { cachePackagePath } = require('./src/need-path')
 // TODO：是否更新最新docker-base-cli
 const hodorCheck = () => {
   console.log(process.cwd())
