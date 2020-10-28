@@ -106,7 +106,7 @@ const createDockerBaseImage = async () => {
     // b1.stop()
     console.log(colors.random(`第五阶段：改写本地docker文件版本号 ➜ `))
     const config = fs.readFileSync(dockerFilePath, 'utf-8')
-    const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/)(.*):([a-zA-Z0-9]*)/g, (a, b, c, d) => {
+    const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/)(.*):([a-zA-Z0-9.]*)/g, (a, b, c, d) => {
       console.log(b)
       console.log(c)
       console.log(version)
@@ -114,7 +114,7 @@ const createDockerBaseImage = async () => {
     })
     console.log(replaceStr)
     fs.writeFileSync(dockerFilePath, replaceStr)
-    console.log(colors.random(`构建成功🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉`))
+    console.log(colors.random(`构建成功`) + '🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉')
     // await execa('git', ['add', dockerFilePath])
   } catch (error) {
     console.error(error)

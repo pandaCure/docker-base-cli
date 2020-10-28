@@ -1,5 +1,0 @@
-FROM node:12.13.0-alpine as base
-
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories && apk update && apk add build-base && apk add python
-WORKDIR /app
-COPY . .
