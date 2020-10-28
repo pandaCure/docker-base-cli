@@ -80,6 +80,9 @@ const createDockerBaseImage = async () => {
     console.log(`build successfully`)
     const config = fs.readFileSync(dockerFilePath, 'utf-8')
     const replaceStr = config.replace(/(docker\.yc345\.tv\/teacherschool\/(.*):)([a-zA-Z0-9]*)/g, (a, b, c, d) => {
+      console.log(b)
+      console.log(PROJECT)
+      console.log(version)
       return `${b}${PROJECT}:${version}`
     })
     console.log(replaceStr)
