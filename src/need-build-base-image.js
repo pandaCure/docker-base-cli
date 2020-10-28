@@ -17,6 +17,9 @@ const isNeedBuildBaseImage = () => {
     cacheData.dependencies = contextDependencies
     fs.writeFileSync(cachePackagePath, JSON.stringify(cacheData, null, 2))
     createDockerBaseImage()
+  } else {
+    console.log('🙅‍♀️  不需要build')
+    process.exit(1)
   }
 }
 module.exports = isNeedBuildBaseImage
