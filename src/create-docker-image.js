@@ -29,7 +29,8 @@ const REMOTE = 'docker.yc345.tv/teacherschool/'
 })
 const createDockerBaseImage = async () => {
   const { cachePackagePath } = require('./need-path')
-  const { dockerVersion } = require(cachePackagePath)
+  const cachePackageInfo = require(cachePackagePath)
+  const { dockerVersion } = cachePackageInfo
   if (!fs.existsSync(baseDockerFilePath)) {
     const baseFile = fs.readFileSync(path.resolve(__dirname, './template/Dockerfile.base'))
     fs.writeFileSync(baseDockerFilePath, baseFile)
@@ -114,6 +115,13 @@ const createDockerBaseImage = async () => {
     })
     console.log(replaceStr)
     fs.writeFileSync(dockerFilePath, replaceStr)
+    console.log(colors.random(`第六阶段：改写本地缓存文件版本号 ➜ `))
+    const newCachePackageInfo = {
+      ...cachePackageInfo,
+      dockerVersion: version,
+    }
+    fs.writeFileSync(cachePackagePath, JSON.stringify(newCachePackageInfo, null, 2))
+    await execa('git', ['add', '-u', '.'])
     console.log(colors.random(`构建成功`) + '🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉')
     // await execa('git', ['add', dockerFilePath])
   } catch (error) {
